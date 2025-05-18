@@ -1,4 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Image } from "react-native";
+import { TouchableOpacity } from "react-native";
+
 import {
   View,
   TextInput,
@@ -33,7 +36,7 @@ export default function App() {
 
     try {
       const response = await axios.post(
-        "https://b65a-103-182-221-237.ngrok-free.app/chat",
+        "https://4632-103-182-221-237.ngrok-free.app/chat",
         {
           text: customText,
           sessionId,
@@ -61,15 +64,29 @@ export default function App() {
   };
 
   const renderMessage = ({ item }) => (
-    <Text
+    <View
       style={[
-        styles.message,
-        item.sender === "user" ? styles.user : styles.bot,
+        styles.messageContainer,
+        item.sender === "user" ? styles.userContainer : styles.botContainer,
       ]}
     >
-      {item.sender === "user" ? "You: " : "Bot: "}
-      {item.text}
-    </Text>
+      {item.sender === "bot" && (
+        <Image source={require("./assets/bot.jpg")} style={styles.avatar} />
+      )}
+
+      <View
+        style={[
+          styles.message,
+          item.sender === "user" ? styles.user : styles.bot,
+        ]}
+      >
+        <Text>{item.text}</Text>
+      </View>
+
+      {item.sender === "user" && (
+        <Image source={require("./assets/user.jpg")} style={styles.avatar} />
+      )}
+    </View>
   );
 
   //usEffect sends a hi message to bot so as to get a initial greeting response from it and also to get any parameters generated from ui
@@ -108,8 +125,17 @@ export default function App() {
               placeholder="Type a message"
               style={styles.input}
             />
-            <Button title="Send" onPress={() => handleSend(input)} />
-            <Button title="Reset" onPress={handleReset} color="red" />
+
+            <TouchableOpacity
+              style={styles.sendButton}
+              onPress={() => handleSend(input)}
+            >
+              <Text style={styles.buttonText}>Send</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
+              <Text style={styles.buttonText}>Reset</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -132,6 +158,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   message: {
+    maxWidth: 280,
     marginVertical: 4,
     padding: 10,
     borderRadius: 5,
@@ -159,5 +186,47 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     paddingHorizontal: 15,
     paddingVertical: 8,
+  },
+  avatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    marginHorizontal: 5,
+  },
+
+  messageContainer: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginVertical: 4,
+  },
+
+  userContainer: {
+    justifyContent: "flex-end",
+    alignSelf: "flex-end",
+  },
+
+  botContainer: {
+    justifyContent: "flex-start",
+    alignSelf: "flex-start",
+  },
+
+  sendButton: {
+    backgroundColor: "#007AFF",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 25,
+  },
+
+  resetButton: {
+    backgroundColor: "#FF3B30",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 25,
+    marginLeft: 5,
+  },
+
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
